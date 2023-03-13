@@ -51,7 +51,7 @@ Writes the contents of the image to the specified file.
 
 ### .gist
 
-Display the image in a terminal supporting [Kitty's graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol).
+Returns a string suitable for printing inside a terminal supporting [Kitty's graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol).
 
 ## BUGS
 
