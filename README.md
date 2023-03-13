@@ -49,6 +49,10 @@ Gets the color of a pixel in the image as an array of channel values.
 
 Writes the contents of the image to the specified file.
 
+### .gist
+
+Display the image in a terminal supporting [Kitty's graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol).
+
 ## BUGS
 
 None known. Please report bugs at
