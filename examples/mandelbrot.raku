@@ -1,62 +1,50 @@
 #!/usr/bin/env raku
-
-my constant $root = $?FILE.IO.cleanup.parent.parent;
-use lib $root.child('lib');
-
+use lib <lib>;
 use Image::PNG::Portable;
 
-sub MAIN (
-    Int $width = 150,
-    Int $height = $width,
-    Bool :$transparent = False,
-    Int :$iter = 150,
-    Bool :$quiet = False
-) {
-    my $img = Image::PNG::Portable.new: :$width, :$height, :alpha($transparent);
-    $img.set-all(255, 255, 255) if !$transparent;
+my ($w, $h) = 800, 800;
+my $out = Image::PNG::Portable.new: :width($w), :height($h);
 
-    my ($max-x, $max-y) = $width - 1, $height - 1;
-    my $half-height = ($height / 2).ceiling;
-    my $half-max-y = $half-height - 1 unless $height %% 2;
-    my ($r_e, $g_e, $b_e) =
-        5 ** e,
-        5 ** ((1 + 5.sqrt) / 2), # phi (just cuz)
-        5;
+my $maxIter = 150;
 
-    say 'Rendering...' unless $quiet;
+my @re = scale(-2.05 .. 1.05, $h);
+my @im = scale( -11/8 .. 11/8, $w) X* 1i;
 
-    for ^$width X ^$half-height -> ($x, $y) {
-        my $c = ($x/$max-x - .5) * 4 + ($y/$max-y - .5) * 4i * $height / $width;
-        my ($re, $im) = $c.re, $c.im;
-
-        # https://en.wikipedia.org/wiki/Mandelbrot_set#Cardioid_.2F_bulb_checking
-        my $q = ($re - .25) ** 2 + $im ** 2;
-        next if $q * ($q + ($re - .25)) < .25 * $im ** 2 ||
-            ($re + 1) ** 2 + $im ** 2 < .0625;
-
-        my $z = Complex.new: 0, 0;
-        for ^$iter -> $i {
-            next if ($z = $z**2 + $c).abs <= 2;
-
-            my $shade = 1 - $i / ($iter - 1);
-            my ($r, $g, $b) = 
-                (( $shade ** $r_e )*255).round,
-                (( $shade ** $g_e )*255).round,
-                (( $shade ** $b_e )*255).round;
-
-            $img.set: $x, $y, $r, $g, $b;
-            $img.set: $x, $max-y - $y, $r, $g, $b
-                unless $half-max-y && $y == $half-max-y;
-
-            last;
-        }
+for ^($w div 2) -> $x {
+    ^$h .map: -> $y {
+        my $i = (mandelbrot( @re[$y] + @im[$x] ) / $maxIter) ** .25;
+        my @hsv = hsv2rgb($i, 1, ?$i).rotate;
+        $out.set: $x, $y, |@hsv;
+        $out.set: $w - 1 - $x, $y, |@hsv;
     }
-
-    printf "\%.2fs\n", now - BEGIN { now } unless $quiet;
-
-    $img.write: 'mandelbrot.png';
-
-    True;
 }
 
+say $out;
 
+sub scale (Range $r,Int $n) { $r.min, * + ($r.max - $r.min) / ($n - 1) ... $r.max }
+
+sub mandelbrot(Complex $c) {
+    my $z = $c;
+    for ^$maxIter {
+	    $z = $z * $z + $c;
+	    .return if $z.abs > 2;
+    }
+    0
+}
+
+sub hsv2rgb ( $h, $s, $v ){
+    state %cache;
+    %cache{"$h|$s|$v"} //= do {
+        my $c = $v * $s;
+        my $x = $c * (1 - abs( (($h*6) % 2) - 1 ) );
+        my $m = $v - $c;
+        [(do given $h {
+            when   0..^1/6 { $c, $x, 0 }
+            when 1/6..^1/3 { $x, $c, 0 }
+            when 1/3..^1/2 { 0, $c, $x }
+            when 1/2..^2/3 { 0, $x, $c }
+            when 2/3..^5/6 { $x, 0, $c }
+            when 5/6..1    { $c, 0, $x }
+        } ).map: ((*+$m) * 255).Int]
+    }
+}

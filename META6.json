@@ -5,7 +5,7 @@
     "version" : "*",
     "description" : "Portable PNG output for Raku",
     "author" : "raydiak",
-    "depends" : [ "String::CRC32", "Compress::Zlib" ],
+    "depends" : [ "String::CRC32", "Compress::Zlib", "Base64" ],
     "provides" : {
         "Image::PNG::Portable" : "lib/Image/PNG/Portable.rakumod"
     },
