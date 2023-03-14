@@ -1,7 +1,7 @@
 use Test;
 plan 1;
 
-use Image::PNG::Portable;
+use PNG;
 
 ok 1, 'Module loads successfully';
 
