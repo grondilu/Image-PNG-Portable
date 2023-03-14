@@ -1,4 +1,4 @@
-# Image::PNG::Portable
+# PNG
 
 This is an almost-pure Raku PNG module.
 
@@ -14,10 +14,13 @@ Rakudo bugfix. Violate them at your peril.
 
 ## Synopsis
 
-    use Image::PNG::Portable;
-    my $o = Image::PNG::Portable.new: :width(16), :height(16);
+```raku
+    use PNG;
+    my $o = PNG.new: :width(16), :height(16);
     $o.set: 8,8, 255,255,255;
     $o.write: 'image.png';
+    say $o; # will display the image in suitable terminals
+```
 
 ## Usage
 
@@ -30,7 +33,7 @@ here for brevity, not exported in the public API.
 
 ### .new(PInt :$width!, PInt :$height!, Bool $alpha = True)
 
-Creates a new Image::PNG::Portable object, initialized to black. If the alpha
+Creates a new PNG object, initialized to black. If the alpha
 channel is enabled, it is initialized to transparent.
 
 ### .set(UInt $x, UInt $y, UInt8 $red, UInt8 $green, UInt8 $blue, UInt8 $alpha = 255)
@@ -56,5 +59,5 @@ Returns a string suitable for printing inside a terminal supporting [Kitty's gra
 ## BUGS
 
 None known. Please report bugs at
-https://github.com/raydiak/Image-PNG-Portable/issues or to
+https://github.com/grondilu/Image-PNG-Portable/issues or to
 raydiak@cyberuniverses.com .
