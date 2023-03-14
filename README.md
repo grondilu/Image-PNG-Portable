@@ -1,6 +1,6 @@
 # PNG
 
-This is an almost-pure Raku PNG module.
+This is an almost-pure Raku [PNG](https://www.w3.org/TR/png) module.
 
 ## Status
 
