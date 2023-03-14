@@ -1,9 +1,9 @@
 #!/usr/bin/env raku
 use lib <lib>;
-use Image::PNG::Portable;
+use Image::PNG;
 
 my ($w, $h) = 800, 800;
-my $out = Image::PNG::Portable.new: :width($w), :height($h);
+my $out = Image::PNG.new: :width($w), :height($h);
 
 my $maxIter = 150;
 
